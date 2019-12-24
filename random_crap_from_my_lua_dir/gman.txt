@@ -1,0 +1,1 @@
+sound.PlayURL("http://g1.metastruct.net:20080/3gman.ogg", "autoplay", function(a) end)
