@@ -69,7 +69,13 @@ do
 		time = RealTime,
 	}
 
-	local code_cache = {}
+	local code_cache   = {}
+	local bad_keywords = {
+		"break",     "do",        "else",      "elseif",    "end",
+		"false",     "for",       "function",  "if",        "in",
+		"repeat",    "return",    "then",      "until",     "while",
+		"local",
+	}
 
 	function compileExpression(exp)
 		if code_cache[exp] then
@@ -79,6 +85,13 @@ do
 		local ch = exp:match("[^=1234567890%-%+%*/%%%^%(%)%.A-z%s]")
 		if ch then
 			return false, "expression:1: invalid character " .. ch
+		end
+
+		for _, keyword in ipairs(bad_keywords) do
+			local ch = exp:match("[^A-z]" .. keyword .. "[^A-z]") or exp:match("^" .. keyword .. "[^A-z]")
+			if ch then
+				return false, "expression:1: keywords are not allowed " .. ch
+			end
 		end
 
 		local compiled = CompileString("return (" .. exp .. ")", "expression", false)
